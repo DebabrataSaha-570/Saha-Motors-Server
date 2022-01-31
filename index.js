@@ -67,6 +67,22 @@ async function run() {
       console.log(result)
       res.json(result)
     })
+    //update API
+    app.put('/updateOrderStatus/:id', async (req, res) => {
+      const id = req.params.id;
+      const body = req.body;
+      const filter = { _id: ObjectId(id) }
+
+      const updateDoc = {
+        $set: {
+          status: body?.status
+        }
+      }
+      const result = await orderCollection.updateOne(filter, updateDoc)
+      console.log(result)
+      res.json(result)
+
+    })
     //delete API
 
     app.delete('/deleteOrder/:id', async (req, res) => {
