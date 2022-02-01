@@ -48,9 +48,25 @@ async function run() {
       console.log(email)
       const query = { email: email }
       const cursor = orderCollection.find(query)
+
       const order = await cursor.toArray()
 
       res.json(order)
+    })
+    app.get('/users/:email', async (req, res) => {
+
+      const email = req.params.email;
+      const query = { email: email };
+      const user = usersCollection.find(query)
+
+      const result = await user.toArray()
+      // res.json(result)
+
+      let isAdmin = false;
+      if (result[0]?.role === 'Admin') {
+        isAdmin = true;
+      }
+      res.json({ admin: isAdmin })
     })
 
     //post API
@@ -81,8 +97,17 @@ async function run() {
       const filter = { email: user?.email }
       const options = { upsert: true };
       const updateDoc = { $set: user }
-      const result = usersCollection.updateOne(filter, updateDoc, options)
+      const result = await usersCollection.updateOne(filter, updateDoc, options)
       res.json(result)
+
+    })
+    app.put('/addAdmin', async (req, res) => {
+      const user = req.body;
+      const filter = { email: user?.email };
+      const updateDoc = { $set: { role: 'Admin' } }
+      const result = await usersCollection.updateOne(filter, updateDoc)
+      res.json(result)
+
 
     })
     app.put('/updateOrderStatus/:id', async (req, res) => {
