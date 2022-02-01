@@ -22,6 +22,8 @@ async function run() {
     const database = client.db("sahaMotors");
     const productsCollection = database.collection("products");
     const orderCollection = database.collection("orders");
+    const usersCollection = database.collection("users");
+
 
     //get API
     app.get('/allProducts', async (req, res) => {
@@ -67,7 +69,22 @@ async function run() {
       console.log(result)
       res.json(result)
     })
+    app.post('/addUser', async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user)
+      console.log(result)
+      res.json(result)
+    })
     //update API
+    app.put('/addUser', async (req, res) => {
+      const user = req.body;
+      const filter = { email: user?.email }
+      const options = { upsert: true };
+      const updateDoc = { $set: user }
+      const result = usersCollection.updateOne(filter, updateDoc, options)
+      res.json(result)
+
+    })
     app.put('/updateOrderStatus/:id', async (req, res) => {
       const id = req.params.id;
       const body = req.body;
