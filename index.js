@@ -23,6 +23,7 @@ async function run() {
     const productsCollection = database.collection("products");
     const orderCollection = database.collection("orders");
     const usersCollection = database.collection("users");
+    const reviewCollection = database.collection("reviews");
 
 
     //get API
@@ -30,6 +31,11 @@ async function run() {
       const cursor = productsCollection.find({})
 
       const result = await cursor.toArray();
+      res.json(result)
+    })
+    app.get('/reviews', async (req, res) => {
+      const cursor = reviewCollection.find()
+      const result = await cursor.toArray()
       res.json(result)
     })
     app.get('/orders', async (req, res) => {
@@ -91,6 +97,7 @@ async function run() {
       console.log(result)
       res.json(result)
     })
+
     //update API
     app.put('/addUser', async (req, res) => {
       const user = req.body;
@@ -100,6 +107,15 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc, options)
       res.json(result)
 
+    })
+    app.put('/addReview', async (req, res) => {
+      const review = req.body;
+      const filter = { email: review?.email }
+      const options = { upsert: true };
+      const updateDoc = { $set: review }
+      const result = await reviewCollection.updateOne(filter, updateDoc, options)
+      console.log(result)
+      res.json(result)
     })
     app.put('/addAdmin', async (req, res) => {
       const user = req.body;
